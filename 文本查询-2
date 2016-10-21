@@ -1,0 +1,82 @@
+#include<vector>
+#include<fstream>
+#include<string>
+#include<sstream>
+#include<map>
+#include<set>
+#include<iostream>
+using namespace std;
+//文本查询
+
+class queryresult;
+class textquery
+{
+public:
+	typedef vector<string>::size_type line_no;
+	textquery(ifstream&);
+	queryresult query(string&)const;
+private:
+	shared_ptr<vector<string> >file;//输入文件
+	map<string,shared_ptr<set<line_no>>>wm;//单词，行号
+};
+textquery::textquery(ifstream& s):file(new vector<string>)
+{
+	string text;
+	while(getline(s,text))
+	{
+		file->push_back(text);
+		int n=file->size()-1;
+		istringstream line(text);
+		string word;
+		while(line>>word)
+		{
+			auto &lines=wm[word];
+			if(!lines)
+				lines.reset(new set<line_no>);
+			lines->insert(n);
+		}
+	}
+}
+
+class queryresult
+{
+	friend ostream& print(ostream&, const queryresult&);
+public:
+	typedef vector<string>::size_type line_no;
+	queryresult(){};
+	queryresult(string s,shared_ptr<set<line_no>>p, shared_ptr<vector<string>>f):sought(s),lines(p),file(f){}
+private:
+	string sought;
+	shared_ptr<set<line_no>>lines;
+	shared_ptr<vector<string>>file;
+};
+
+queryresult textquery::query(string& sought)const
+{
+	static shared_ptr<set<line_no>> nodata;
+	auto li=wm.find(sought);// wm shared_ptr< string, shared_ptr<set<line_no>> >
+	if(li==wm.end())
+		return queryresult(sought,nodata,file);
+	else
+		return queryresult(sought,li->second,file);
+}
+
+ostream& print(ostream& os,const queryresult& qr)
+{
+	os<<qr.sought<<"  "<<qr.lines->size()<<"  "<<endl;
+	for(auto it=(*qr.lines).begin();it!=(*qr.lines).end();it++)
+	{
+		os<<"\t(line"<<*it+1<<") "<<*(qr.file->begin()+*it)<<endl;
+	}
+	return os;
+}
+int main()
+{
+	vector<string>file;
+	ifstream input("even.txt");
+	textquery A(input);
+	string s="u";
+	queryresult B=A.query(s);
+	print(cout,B);
+ system("pause");
+}
