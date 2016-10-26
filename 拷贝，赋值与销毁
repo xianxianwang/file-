@@ -1,0 +1,28 @@
+class Foo
+{
+public:
+Foo();
+Foo(const Foo&);//拷贝构造函数
+Foo& operator=(const Foo&);//拷贝赋值运算符
+~Foo();//析构函数
+}
+
+
+struct x
+{
+	x(){cout<<"x()"<<endl;}
+	x(const x&){cout<<"(const x&)"<<endl;}
+	x& operator=(const x&){cout<<"x& operator=(const x&)"<<endl;}
+	~x(){cout<<"~x()"<<endl;};
+};
+
+int main()
+{
+	x *p=new x;// x() p是一个内置指针
+	auto p2=make_shared<x>();//x()  p2是一个shared_ptr
+	x item(*p);//x(const x&)
+	vector<x>vx;
+	vx.push_back(*p2);//x(const x&)
+	delete p;//~x()
+	system("pause");
+}
