@@ -2,10 +2,26 @@ class Foo
 {
 public:
 Foo();
-Foo(const Foo&);//拷贝构造函数
+Foo(const Foo& p):ps(new string(*p.ps)),i(p.i){}//拷贝构造函数
 Foo& operator=(const Foo&);//拷贝赋值运算符
-~Foo();//析构函数
+//~Foo();//析构函数
+~Foo(){delete ps;}
+private:
+string *ps;
+int i;
 }
+
+Foo& Foo:: operate=(const Foo& rhs)
+{
+auto newp =new string(*rhs.ps);
+delete ps;
+ps=newp;
+return *this;
+}
+当你编写一个复制运算符时，一个好的模式是，
+先将右侧运算对象拷贝到一个局部临时对象中。
+当拷贝完成后，销毁左侧运算对象的现有成员就是安全的了。
+一旦左侧运算对象的资源被销毁，就只剩下将数据从临时对象拷贝到左侧运算对象的成员中了。
 
 
 struct x
