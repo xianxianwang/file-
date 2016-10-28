@@ -1,0 +1,35 @@
+inline 内联函数：将它在每个调用点上“内联地”展开
+such as:
+inline const string &
+shorterstring(const string &s1, const string &s2)
+{
+return s1.size()<=s2.size()?s1:s2;
+}
+假设我们把shorterstring函数定义为内联函数，则如下调用
+cout<<shorterstring(s1,s2)<<endl;
+将在编译过程中展开类似于下面的形式
+cout<<(s1.size()<s2.size()?s1:s2)<<endl;
+
+constexpr
+constexpr是指能用于常量表达式的函数。函数的返回类型及所有形参的类型都得是字面值类型，而且函数体中必须有且只有一条return语句
+constexpr int new_sz(){return 42;}
+constexpr函数体还可以包含其他语句，只要这些语句在运行时不执行任何操作就行。例如， constexpr函数中可以有空语句、类型别名、以及using声明
+
+把内联函数和constexpr函数放在头文件中
+
+assert预处理宏 #include<cassert>
+assert(expr);
+首先对expr求值，如果表达式为假（0），assert输出信息并终止程序的执行。如果表达式为真（即非0），assert什么也不做。
+
+
+auto类型说明符
+auto让编译器通过初始值来推算变量的类型，显然，auto定义的变量必须有初始值
+使用auto也能在一条语句中声明多个变量。因为一条声明语句只能有一个基本数据类型，所以该语句中所有变量的初始基本数据类型都必须一样，
+such as: auto i=0, *p=&i //i是整数，p是整型指针
+
+
+decltype类型指示符
+decltype，它的作用是选择并返回操作数的数据类型
+such as: decltype(f()) sum=x; //sum的类型就是函数f的返回类型
+decltype的表达式如果是加上了括号的变量，结果将是引用  decltype( (variable) )
+只有当variable本身就是一个引用时，decltyoe(variable)才是引用，（引用必须初始化）
