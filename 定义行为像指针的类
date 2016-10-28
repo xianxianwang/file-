@@ -1,0 +1,34 @@
+class hasptr  //p.455
+{
+public:
+	hasptr(const string &s):ps(new string(s)),use(new size_t(1)),i(0) {}//创建对象时，分配一个新的计数器
+	hasptr(const hasptr &p) :ps(p.ps), use(p.use), i(p.i) { ++*use; }//拷贝时，拷贝指向计数器的指针
+	hasptr& operator=(const hasptr&);
+	~hasptr();
+private:
+	string *ps;
+	size_t *use;//将计数器保存在动态内存中 size_t *use=new size_t();
+	int i;
+};
+
+hasptr& hasptr::operator=(const hasptr &rhs)
+{
+	++*rhs.use;
+	if (--*use == 0)
+	{
+		delete ps;
+		delete use;
+	}
+	ps = rhs.ps;
+	use = rhs.use;
+	i = rhs.i;
+	return *this;
+}
+hasptr::~hasptr()
+{
+	if (--*use == 0)
+	{
+		delete ps;
+		delete use;
+	}
+}
