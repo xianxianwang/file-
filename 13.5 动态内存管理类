@@ -94,20 +94,28 @@ void Strvec::reallocate()
 }
 void Strvec::resize(size_t n)
 {
-	auto newdata = alloc.allocate(n);
+        auto newdata=alloc.allocate(n);
 	if (n < size())
 	{
-		for (auto ele = elements + n; ele != first_free; ++ele)
+	        auto dest=newdata;
+		auto ele=elements;
+		for (size_t i=0;i!=n;i++)
 		{
-			alloc.destroy(ele);
+			alloc.construct(dest++,move(*ele++));
 		}
 		elements = newdata;
-		first_free = cap = newdata + n;
+		first_free = cap = dest;
 	}
 	else
 	{
+	        auto dest=newdata;
+		auto ele=elements;
+	        for(size_t i=0;i!=size();i++)
+		{
+		        alloc.construct(dest++,move(*ele++));
+		}
 		elements = newdata;
-		first_free = newdata + size();
+		first_free = dest;
 		cap = newdata + n;
 	}
 }
