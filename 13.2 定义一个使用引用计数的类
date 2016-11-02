@@ -1,0 +1,65 @@
+class hasptr  //p.455
+{
+public:
+	friend void swap(hasptr &lh,hasptr &rh);
+	hasptr():ps(nullptr),use(new size_t(1)),i(0) {};
+	hasptr(const string &s) :ps(new string(s)), use(new size_t(1)), i(0) {}//创建对象时，分配一个新的计数器
+	hasptr(const hasptr &p) :ps(p.ps), use(p.use), i(p.i) { ++*use; }//拷贝时，拷贝指向计数器的指针
+	hasptr& operator=(const hasptr&);
+	hasptr& operator=(hasptr );
+	bool operator<(const hasptr&);
+	~hasptr();
+	void set(int x) { i = x; }
+	int get() { return i; }
+private:
+	string *ps;
+	size_t *use;//将计数器保存在动态内存中 size_t *use=new size_t();
+	int i;
+};
+
+hasptr& hasptr::operator=(const hasptr &rhs)
+{
+	++*rhs.use;
+	if (--*use == 0)
+	{
+		delete ps;
+		delete use;
+	}
+	ps = rhs.ps;
+	use = rhs.use;
+	i = rhs.i;
+	return *this;
+}
+bool hasptr::operator<(const hasptr& rhs)
+{
+	if (i < rhs.i)
+	{ 
+		return true;
+		cout << "<" << endl;
+	}
+	else
+	{ 
+		return false;
+		cout << ">" << endl;
+	}
+}
+hasptr::~hasptr()
+{
+	if (--*use == 0)
+	{
+		delete ps;
+		delete use;
+	}
+}
+void swap(hasptr& lh,hasptr &rh)
+{
+	swap(lh.ps, rh.ps);
+	swap(lh.use, rh.use);
+	swap(lh.i, rh.i);
+	cout << "swap.." << endl;
+}
+hasptr& hasptr::operator=(hasptr rhs)
+{
+	swap(*this, rhs);
+	return *this;
+}
