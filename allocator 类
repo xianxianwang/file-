@@ -10,9 +10,9 @@ auto const p=alloc.allocate(n);//分配n个未初始化的string
 
 a.construct(p,args)：p必须是一个类型为T*的指针，指向一块原始内存；arg被传递给类型为T的构造函数，用来在p指向的内存中构造一个对象
 auto q=p;//q指向最后构造的元素之后的位置
-alloc.allocate(q++);
-alloc.allocate(q++,10,'c');
-alloc.allocate(q++,"hi");
+alloc.construct(q++);
+alloc.construct(q++,10,'c');
+alloc.construct(q++,"hi");
 还未构造的情况下，使用原始内存是错误的
 
 a.destory(p):p为T*类型的指针，此算法对p指向的对象执行析构函数
