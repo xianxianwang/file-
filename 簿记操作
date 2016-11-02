@@ -1,0 +1,108 @@
+class Folder
+{
+public:
+	Folder();
+	Folder(const Folder&);
+	Folder& operator=(const Folder&);
+	~Folder();
+	void save(message&);
+	void remove(message&);
+	void addmsg(message*);
+	void remmsg(message*);
+private:
+	set<message*>me;
+	void add_to_message(const Folder &);
+	void remove_from_message();
+};
+
+class Folder;
+class message
+{
+	friend class Folder;
+	friend void swap(message &lsh, message &rsh);
+public:
+	explicit message(const string &str = "") :contents(str) {}
+	message(const message&);
+	message& operator=(const message&);
+	~message();
+	void save(Folder&);
+	void remove(Folder&);
+	void addfo(Folder *);
+	void remfo(Folder *);
+private:
+	string contents;
+	set<Folder*>folders;
+	void add_to_Folders(const message&);
+	void remove_from_Folders();
+
+};
+
+void Folder::addmsg(message *rhs)
+{
+	me.insert(rhs);
+}
+void Folder::remmsg(message *rhs)
+{
+	me.erase(rhs);
+}
+
+
+void message::addfo(Folder *rsh)
+{
+	folders.insert(rsh);
+}
+void message::remfo(Folder *rsh)
+{
+	folders.erase(rsh);
+}
+void message::save(Folder& f)
+{
+	folders.insert(&f);
+	f.addmsg(this);
+}
+void message::remove(Folder& f)
+{
+	folders.erase(&f);
+	f.remmsg(this);
+}
+void message::add_to_Folders(const message &m)
+{
+	for (auto f : m.folders)
+		f->addmsg(this);
+}
+message::message(const message& m) :contents(m.contents), folders(m.folders)
+{
+	add_to_Folders(m);
+}
+void message::remove_from_Folders()
+{
+	for (auto f : folders)
+	{
+		f->remmsg(this);
+	}
+}
+message::~message()
+{
+	remove_from_Folders();
+}
+message& message::operator=(const message &rsh)
+{
+	remove_from_Folders();
+	contents = rsh.contents;
+	folders = rsh.folders;
+	add_to_Folders(rsh);
+	return *this;
+}
+void swap(message &lsh, message &rsh)
+{
+	for (auto f : lsh.folders)
+		f->remmsg(&lsh);
+	for (auto f : rsh.folders)
+		f->remmsg(&rsh);
+	swap(lsh.folders, rsh.folders);
+	swap(lsh.contents, rsh.contents);
+	for (auto f : lsh.folders)
+		f->addmsg(&lsh);
+	for (auto f : rsh.folders)
+		f->addmsg(&rsh);
+}
