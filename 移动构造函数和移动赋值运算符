@@ -1,0 +1,66 @@
+class Strvec
+{
+public:
+	Strvec() :elements(nullptr), first_free(nullptr), cap(nullptr) {}
+	Strvec(initializer_list<string>);
+	Strvec(const Strvec&);//拷贝构造函数
+	Strvec(Strvec &&)noexcept;//移动构造函数
+	Strvec& operator=(const Strvec&);//拷贝赋值运算符
+	Strvec& operator=(Strvec &&)noexcept;//移动赋值运算符
+	~Strvec();
+	void push_back(const string&);//拷贝元素
+	size_t size() const { return first_free - elements; }
+	size_t capacity() const { return cap - elements; }
+	string *begin() const { return elements; }
+	string *end() const { return first_free; }
+private:
+	static allocator<string>alloc;
+	void free();//摧毁元素并释放内存
+	void free1();
+	void reallocate();//获得更多的内存并拷贝已有元素
+	void resize(size_t);
+	void reserve(size_t);
+	pair<string*, string*> alloc_n_copy(const string*, const string*);
+	void chk_n_alloc()//保证Strvec至少有容纳一个新元素的空间
+	{
+		if (size() == capacity())
+			reallocate();
+	}
+	string *elements;//指向分配的内存中的首元素
+	string *first_free;//指向最后一个实际元素之后的位置
+	string *cap;//指向分配的内存末尾之后的位置
+};
+//拷贝构造函数
+Strvec::Strvec(const Strvec& s)
+{
+	auto newdata = alloc_n_copy(s.begin(), s.end());
+	elements = newdata.first;
+	first_free = cap = newdata.second;
+}
+//移动构造函数
+Strvec::Strvec(Strvec&& s)noexcept:elements(s.elements),first_free(s.first_free),cap(s.cap)
+{
+	s.elements = s.first_free = s.cap = nullptr;//移后源对象必须可析构。通过将移后源对象的指针成员置为nullptr来实现。
+}
+//拷贝赋值运算符
+Strvec& Strvec::operator=(const Strvec& rsh)
+{
+	auto newdata = alloc_n_copy(rsh.begin(), rsh.end());
+	free();
+	elements = newdata.first;
+	first_free = cap=newdata.second;
+	return *this;
+}
+//移动赋值运算符
+Strvec& Strvec::operator=(Strvec&& rsh)noexcept
+{
+	if (this != &rsh)
+	{
+		free();
+		elements = rsh.elements;
+		first_free = rsh.first_free;
+		cap = rsh.cap;
+		rsh.elements = rsh.first_free = rsh.cap = nullptr;
+	}
+	return *this;
+}
