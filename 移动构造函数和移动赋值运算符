@@ -54,7 +54,7 @@ Strvec& Strvec::operator=(const Strvec& rsh)
 //移动赋值运算符
 Strvec& Strvec::operator=(Strvec&& rsh)noexcept
 {
-	if (this != &rsh)
+	if (this != &rsh)//首先检查自赋值情况
 	{
 		free();
 		elements = rsh.elements;
