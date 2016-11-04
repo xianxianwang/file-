@@ -1,0 +1,27 @@
+class String
+{
+public:
+	String() {}
+	String(char*) {}
+	String(const String&) { cout << "const String&" << endl; }
+	String(String &&) { cout << "移动构造函数" << endl; }
+	String& operator=(String &&) { cout << "移动赋值运算符" << endl; }
+	String& operator=(const String&) { cout << "operator=" << endl; }
+
+private:
+	allocator<char*>alloc;
+};
+
+
+int main()
+{
+	vector<String>vs;
+	String v;
+	String s;
+	String t;
+	vs.push_back(v);
+	vs.push_back(s);
+	vs.push_back(t);
+	system("pause");
+	return 0;
+}
