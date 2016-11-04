@@ -1,0 +1,53 @@
+class Foo
+{
+public:
+	Foo sorted() && ;
+	Foo sorted()const&;
+	Foo sorted_1()const&;
+	Foo sorted_2()const&;
+	Foo sorted_2() && ;
+private:
+	vector<int >data;
+};
+
+Foo Foo::sorted()&&
+{
+	sort(data.begin(), data.end());
+	cout << "移动版本" << endl;
+	return *this;
+}
+Foo Foo::sorted()const &
+{
+	Foo ret(*this);
+	sort(ret.data.begin(),ret.data.end());
+	cout << "const 限定符 和& 限定符" << endl;
+	return ret;
+}
+Foo Foo::sorted_1()const &
+{
+	Foo ret(*this);
+	cout << "产生递归，最终溢出" << endl;
+	return ret.sorted_1();
+}
+Foo Foo::sorted_2()const&
+{
+	cout << "调用移动版本sorted_2()" << endl;
+	return Foo(*this).sorted_2();
+}
+Foo Foo::sorted_2() &&
+{
+	sort(data.begin(), data.end());
+	cout << "移动版本sorted_2()" << endl;
+	return *this;
+}
+int main()
+{
+	Foo().sorted();
+	Foo f, f1, f2;
+	f.sorted();
+	//f1.sorted_1();
+	f2.sorted_2();
+ 
+	system("pause");
+	return 0;
+}
