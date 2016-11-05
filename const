@@ -78,6 +78,44 @@ void fcn(const int i);//当形参有【顶层const】时，传给它常量对象
 
 
 
+8）【从const成员函数返回*this】
+
+一个const成员函数如果以引用的形式返回*this,那么它的返回类型将是常量引用。
+class screen
+{
+public:
+	screen &display(ostream &os) { do_display(os); return *this; }
+	const screen &display(ostream &os)const { do_display(os); return *this; }//基于const的重载
+private:
+	void do_display(ostream &os)const { os << contents << endl; }
+	string contents;
+};
+
+当一个成员调用另一个成员时，this指针在其中隐式地传递。
+因此，当display调用do_display时，它的this指针隐式地传递给do_display.
+而当dispaly的非常量版本调用do_display时，它的this指针将隐式地从【指向非常量的指针】转换成【指向常量的指针】。
+当do_display完成后，display函数各自返回【解引用this（*this）】所得的对象。
+在非常量版本中，this指向一个【非常量对象】。因此display返回一个普通的引用；
+而const成员则返回一个常量引用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
