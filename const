@@ -55,10 +55,25 @@ const double *const pip=&pi;//pip是一个【指向常量对象的常量指针�
 【顶层const】
 【顶层const】表示指针本身是个常量
 【底层const】表示指针所指的对象是一个常量
+更一般的，【顶层const】可以表示任意对象是常量，这一点对任何数据类型都适用，如算术类型、类、指针等。
+【底层const】则与指针和引用等复合类型的基本类型部分有关。
+比较特殊的是，指针类型既可以是顶层const也可以是底层const：
+int i=0;
+int *const p1=&i;//不能改变p1的值，顶层const
+const int ci=42;//不能改变ci的值，底层const
+const int *p2=&ci;//允许改变p2的值，底层const
+const int *const p3=p2;//const 是底层const， *const是顶层const
+const int &r=ci;//用于声明引用的const都是底层const
 
 
+7）【const形参和实参】
+void fcn(const int i);//当形参有【顶层const】时，传给它常量对象或者非常量对象都是可以的
+我们可以用【非常量】初始化一个【底层const对象】，但是反过来不行；
+同时一个【普通的引用】必须用同类型的对象初始化。
 
-
+【尽量使用常量引用】
+使用【普通引用】会限制函数所能接受的实参类型。我们不能把const对象，字面值或者需要类型转换的对象传递给普通的引用形参。
+允许为一个【常量引用】传递非常量对象，字面值，甚至是一个表达式。
 
 
 
